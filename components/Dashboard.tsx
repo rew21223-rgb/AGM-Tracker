@@ -17,6 +17,16 @@ const Dashboard: React.FC<DashboardProps> = ({ agendaItems, phases }) => {
   const agmDate = new Date('2026-03-13');
   
   const daysLeft = Math.ceil((agmDate.getTime() - simulatedToday.getTime()) / (1000 * 60 * 60 * 24));
+  let daysLeftDisplay = `${daysLeft} วัน`;
+  let daysLeftLabel = `เหลือเวลาอีก ${daysLeft} วัน`;
+  
+  if (daysLeft === 0) {
+    daysLeftDisplay = "วันนี้";
+    daysLeftLabel = "ถึงกำหนดวันประชุมใหญ่แล้วในวันนี้";
+  } else if (daysLeft < 0) {
+    daysLeftDisplay = `ผ่านมา ${Math.abs(daysLeft)} วัน`;
+    daysLeftLabel = `ผ่านมาแล้ว ${Math.abs(daysLeft)} วัน จากวันประชุมใหญ่`;
+  }
   
   const totalTasks = phases.reduce((acc, phase) => acc + phase.tasks.length, 0);
   const completedTasks = phases.reduce((acc, phase) => 
@@ -26,6 +36,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agendaItems, phases }) => {
   // Agenda Stats
   const finalizedAgenda = agendaItems.filter(i => i.status === 'Finalized').length;
   const totalAgenda = agendaItems.length;
+  const readinessPercent = Math.round((finalizedAgenda/totalAgenda)*100);
 
   // Pie Chart Data
   const agendaStatus = [
@@ -62,15 +73,15 @@ const Dashboard: React.FC<DashboardProps> = ({ agendaItems, phases }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <SummaryCard 
           title="ระยะเวลาคงเหลือ" 
-          value={`${daysLeft} วัน`}
+          value={daysLeftDisplay}
           icon={Clock} 
           color="sky" 
           subtext={`เป้าหมายวันประชุมใหญ่: ${formatThaiDate(agmDate)}`}
-          accessibilityLabel={`เหลือเวลาอีก ${daysLeft} วัน สำหรับโครงการ AGM. เป้าหมายวันประชุมใหญ่คือ ${formatThaiDate(agmDate)}. สถานะปัจจุบัน ${daysLeft < 14 ? 'วิกฤต' : 'ปกติ'}.`}
+          accessibilityLabel={`ระยะเวลาคงเหลือ: ${daysLeftLabel}. เป้าหมายวันประชุมใหญ่คือ ${formatThaiDate(agmDate)}. สถานะปัจจุบัน ${daysLeft < 14 && daysLeft >= 0 ? 'วิกฤต' : 'ปกติ'}.`}
           trend={{ 
-            value: daysLeft < 14 ? '⚠️ วิกฤต' : '✅ ปกติ', 
+            value: daysLeft < 0 ? 'จบโครงการ' : daysLeft < 14 ? '⚠️ วิกฤต' : '✅ ปกติ', 
             positive: daysLeft >= 14,
-            neutral: false 
+            neutral: daysLeft < 0 
           }}
         />
         <SummaryCard 
@@ -79,7 +90,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agendaItems, phases }) => {
           icon={Activity} 
           color="emerald" 
           subtext={`ทำเสร็จแล้ว ${completedTasks} งาน จาก ${totalTasks} งานย่อย`}
-          accessibilityLabel={`ความคืบหน้าโครงการรวม ${progressPercentage}%. ดำเนินการเสร็จสิ้นแล้ว ${completedTasks} งาน จากทั้งหมด ${totalTasks} งานย่อย.`}
+          accessibilityLabel={`ความคืบหน้าโครงการรวม: ${progressPercentage}%. สถานะกำลังดำเนินการ. ดำเนินการเสร็จสิ้นแล้ว ${completedTasks} งาน จากทั้งหมด ${totalTasks} งานย่อย.`}
           trend={{ value: 'กำลังดำเนินการ', positive: true }}
         />
         <SummaryCard 
@@ -88,9 +99,9 @@ const Dashboard: React.FC<DashboardProps> = ({ agendaItems, phases }) => {
           icon={BookOpen} 
           color="fuchsia" 
           subtext="วาระที่ตรวจสอบความถูกต้องแล้ว"
-          accessibilityLabel={`ความพร้อมเนื้อหาวาระการประชุม. ตรวจสอบความถูกต้องแล้ว ${finalizedAgenda} วาระ จากทั้งหมด ${totalAgenda} วาระ.`}
+          accessibilityLabel={`ความพร้อมเนื้อหาวาระการประชุม: ${readinessPercent}%. ตรวจสอบความถูกต้องแล้ว ${finalizedAgenda} วาระ จากทั้งหมด ${totalAgenda} วาระ.`}
           trend={{ 
-            value: `${Math.round((finalizedAgenda/totalAgenda)*100)}% ข้อมูล`, 
+            value: `${readinessPercent}% ข้อมูล`, 
             positive: finalizedAgenda/totalAgenda >= 0.7, 
             neutral: finalizedAgenda/totalAgenda < 0.7 
           }}
@@ -101,7 +112,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agendaItems, phases }) => {
           icon={AlertTriangle} 
           color="amber" 
           subtext="งานที่เกินกำหนดหรือพบปัญหาล่าช้า"
-          accessibilityLabel={`พบจุดที่ต้องเร่งแก้ไขจำนวน ${overdueCount} รายการ. ซึ่งเป็นงานที่เกินกำหนดหรือพบปัญหาล่าช้า.`}
+          accessibilityLabel={`จุดที่ต้องเร่งแก้ไข: พบ ${overdueCount} รายการ. ${overdueCount > 0 ? 'สถานะต้องแก้ไข' : 'สถานะเรียบร้อย'}. ซึ่งเป็นงานที่เกินกำหนดหรือพบปัญหาล่าช้า.`}
           trend={overdueCount > 0 ? { value: 'ต้องแก้ไข', positive: false } : { value: 'เรียบร้อย', positive: true }}
         />
       </div>

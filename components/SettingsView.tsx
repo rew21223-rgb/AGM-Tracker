@@ -7,6 +7,7 @@ interface SettingsViewProps {
   onAddTeam: (team: TeamDefinition) => void;
   onUpdateTeam: (team: TeamDefinition) => void;
   onDeleteTeam: (id: string) => void;
+  userRole: 'admin' | 'staff';
 }
 
 const COLORS = [
@@ -30,7 +31,7 @@ const COLORS = [
   'bg-rose-100 text-rose-700',
 ];
 
-const SettingsView: React.FC<SettingsViewProps> = ({ teams, onAddTeam, onUpdateTeam, onDeleteTeam }) => {
+const SettingsView: React.FC<SettingsViewProps> = ({ teams, onAddTeam, onUpdateTeam, onDeleteTeam, userRole }) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   
@@ -92,7 +93,7 @@ const SettingsView: React.FC<SettingsViewProps> = ({ teams, onAddTeam, onUpdateT
           </h2>
           <p className="text-sm text-slate-500 mt-1">จัดการรายชื่อฝ่าย/กลุ่มผู้รับผิดชอบงาน</p>
         </div>
-        {!isAdding && !editingId && (
+        {!isAdding && !editingId && userRole === 'admin' && (
           <button 
             onClick={startAdd}
             className="bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-indigo-700 transition-colors flex items-center shadow-sm"
@@ -194,22 +195,24 @@ const SettingsView: React.FC<SettingsViewProps> = ({ teams, onAddTeam, onUpdateT
                     {team.description && <p className="text-sm text-slate-500 font-medium">{team.description}</p>}
                  </div>
               </div>
-              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button 
-                  onClick={() => startEdit(team)}
-                  className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
-                  title="แก้ไข"
-                >
-                  <Edit2 size={18} />
-                </button>
-                <button 
-                  onClick={() => onDeleteTeam(team.id)}
-                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                  title="ลบ"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
+              {userRole === 'admin' && (
+                <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button 
+                    onClick={() => startEdit(team)}
+                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                    title="แก้ไข"
+                  >
+                    <Edit2 size={18} />
+                  </button>
+                  <button 
+                    onClick={() => onDeleteTeam(team.id)}
+                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    title="ลบ"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
+              )}
             </div>
           ))}
           {teams.length === 0 && (

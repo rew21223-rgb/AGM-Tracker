@@ -9,6 +9,7 @@ interface TimelineViewProps {
   onUpdateTask: (phaseId: number, task: Task) => void;
   onAddTask: (phaseId: number, task: Task) => void;
   onDeleteTask: (phaseId: number, taskId: string) => void;
+  userRole: 'admin' | 'staff';
 }
 
 // Helper for Thai Status Display
@@ -57,7 +58,7 @@ const StatusBadge: React.FC<{ status: Task['status'] }> = ({ status }) => {
   );
 };
 
-const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask, onAddTask, onDeleteTask }) => {
+const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask, onAddTask, onDeleteTask, userRole }) => {
   const simulatedToday = new Date('2026-02-07');
   
   // Helper to find team name from ID
@@ -159,7 +160,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
       id: Date.now().toString(),
       date: new Date().toISOString(),
       message: newComment,
-      author: 'Current User'
+      author: userRole === 'admin' ? 'Admin' : 'Staff'
     };
 
     const updatedTask = {
@@ -182,8 +183,8 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
     <div className="space-y-6 pb-12">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-           <h2 className="text-2xl font-bold text-slate-800 tracking-tight">Master Schedule & Task Tracking</h2>
-           <p className="text-sm text-slate-500 mt-1">Manage project workflow and team discussions for AGM 2026.</p>
+           <h2 className="text-2xl font-bold text-slate-800 tracking-tight">แผนงานและกิจกรรมหลัก (Master Schedule)</h2>
+           <p className="text-sm text-slate-500 mt-1">บริหารจัดการขั้นตอนการทำงานและติดตามความคืบหน้าโครงการ AGM 2569</p>
         </div>
         <div className="text-sm bg-indigo-50 text-indigo-700 px-4 py-2 rounded-xl font-bold border border-indigo-100 flex items-center shadow-sm">
           <Calendar size={16} className="mr-2" />
@@ -195,7 +196,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
       <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-wrap gap-x-6 gap-y-4 items-end" role="search" aria-label="Task filters">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="filter-status" className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest flex items-center">
-            <Filter size={12} className="mr-1.5" aria-hidden="true" /> STATUS
+            <Filter size={12} className="mr-1.5" aria-hidden="true" /> สถานะ
           </label>
           <select 
             id="filter-status"
@@ -203,7 +204,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
             onChange={(e) => setFilterStatus(e.target.value)}
             className="text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-3 border bg-slate-50 hover:bg-white transition-all cursor-pointer min-w-[150px] font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1"
           >
-            <option value="All">All Statuses</option>
+            <option value="All">ทั้งหมด</option>
             <option value="Pending">รอดำเนินการ</option>
             <option value="In Progress">กำลังดำเนินการ</option>
             <option value="Completed">เสร็จสิ้น</option>
@@ -214,7 +215,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="filter-department" className="text-[10px] font-bold text-indigo-600 uppercase tracking-widest flex items-center">
-            <User size={12} className="mr-1.5" aria-hidden="true" /> DEPARTMENT
+            <User size={12} className="mr-1.5" aria-hidden="true" /> ฝ่ายรับผิดชอบ
           </label>
           <select 
             id="filter-department"
@@ -222,7 +223,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
             onChange={(e) => setFilterTeam(e.target.value)}
             className="text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-2 px-3 border bg-slate-50 hover:bg-white transition-all cursor-pointer min-w-[180px] font-semibold focus:outline-none focus:ring-2 focus:ring-offset-1"
           >
-            <option value="All">All Teams</option>
+            <option value="All">ทุกฝ่าย</option>
             {teams.map(team => (
               <option key={team.id} value={team.id}>{team.name}</option>
             ))}
@@ -232,7 +233,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
         <div className="h-10 w-px bg-slate-100 hidden sm:block" aria-hidden="true"></div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="filter-start-date" className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">START FROM</label>
+          <label htmlFor="filter-start-date" className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">วันที่เริ่มต้น</label>
           <input
             id="filter-start-date"
             type="date"
@@ -243,7 +244,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="filter-end-date" className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">END AT</label>
+          <label htmlFor="filter-end-date" className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">วันที่สิ้นสุด</label>
           <input
             id="filter-end-date"
             type="date"
@@ -260,7 +261,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
               className="flex items-center px-4 py-2 text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-all border border-rose-200 font-bold focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-1"
               aria-label="Reset all filters"
             >
-              <RotateCcw size={14} className="mr-2" aria-hidden="true" /> Reset Filters
+              <RotateCcw size={14} className="mr-2" aria-hidden="true" /> ล้างตัวกรอง
             </button>
           )}
         </div>
@@ -273,11 +274,11 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
             <caption className="sr-only">List of tasks grouped by project phases</caption>
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center">
-                <th scope="col" className="px-6 py-4 w-[40%] text-left">งานและกิจกรรม (Task Activity)</th>
-                <th scope="col" className="px-4 py-4 w-[18%] text-left">ผู้รับผิดชอบ (Owner)</th>
-                <th scope="col" className="px-4 py-4 w-[17%] text-left">ระยะเวลา (Duration)</th>
-                <th scope="col" className="px-4 py-4 w-[12%] text-center">สถานะ (Status)</th>
-                <th scope="col" className="px-4 py-4 w-[13%] text-center">จัดการ (Actions)</th>
+                <th scope="col" className="px-6 py-4 w-[40%] text-left">งานและกิจกรรม</th>
+                <th scope="col" className="px-4 py-4 w-[18%] text-left">ผู้รับผิดชอบ</th>
+                <th scope="col" className="px-4 py-4 w-[17%] text-left">ระยะเวลาดำเนินการ</th>
+                <th scope="col" className="px-4 py-4 w-[12%] text-center">สถานะ</th>
+                <th scope="col" className="px-4 py-4 w-[13%] text-center">จัดการ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -287,12 +288,12 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                     <div className="bg-slate-50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" aria-hidden="true">
                       <Filter size={32} className="text-slate-300" />
                     </div>
-                    <p className="text-slate-500 font-bold text-lg">No results found</p>
+                    <p className="text-slate-500 font-bold text-lg">ไม่พบข้อมูลที่ค้นหา</p>
                     <button 
                       onClick={resetFilters} 
                       className="text-indigo-600 font-bold text-sm mt-3 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded px-2"
                     >
-                      Clear all filters
+                      ล้างตัวกรองทั้งหมด
                     </button>
                   </td>
                 </tr>
@@ -313,13 +314,15 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                               </span>
                             </div>
                           </div>
-                          <button
-                            onClick={() => handleAddClick(phase.id)}
-                            className="text-[10px] flex items-center text-indigo-600 hover:text-white hover:bg-indigo-600 font-bold bg-white px-3 py-1.5 rounded-lg transition-all border border-indigo-100 shadow-sm uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
-                            aria-label={`Add new task to phase ${phase.name}`}
-                          >
-                            <Plus size={12} className="mr-1.5" aria-hidden="true" /> Add Task
-                          </button>
+                          {userRole === 'admin' && (
+                            <button
+                              onClick={() => handleAddClick(phase.id)}
+                              className="text-[10px] flex items-center text-indigo-600 hover:text-white hover:bg-indigo-600 font-bold bg-white px-3 py-1.5 rounded-lg transition-all border border-indigo-100 shadow-sm uppercase tracking-wide focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
+                              aria-label={`Add new task to phase ${phase.name}`}
+                            >
+                              <Plus size={12} className="mr-1.5" aria-hidden="true" /> เพิ่มงาน
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -397,15 +400,15 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                                     </div>
                                   )}
 
-                                  {task.logs && task.logs.length > 0 && !isExpanded && (
+                                  {!isExpanded && (
                                     <button 
-                                      className="mt-2 flex items-center text-[10px] font-bold text-indigo-600 hover:text-indigo-800 transition-colors hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded-sm" 
+                                      className={`mt-2 flex items-center text-[10px] font-bold transition-colors hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded-sm ${task.logs && task.logs.length > 0 ? 'text-indigo-600 hover:text-indigo-800' : 'text-slate-400 hover:text-indigo-600'}`} 
                                       onClick={() => toggleExpandTask(task.id)}
                                       aria-expanded={isExpanded}
                                       aria-controls={expandedContentId}
                                     >
                                       <MessageSquare size={12} className="mr-1.5" aria-hidden="true" />
-                                      {task.logs.length} updates
+                                      {task.logs && task.logs.length > 0 ? `${task.logs.length} รายการอัปเดต` : 'เพิ่มบันทึก'}
                                     </button>
                                   )}
                                 </div>
@@ -460,28 +463,32 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                                   onClick={() => toggleExpandTask(task.id)}
                                   className={`p-2 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 ${isExpanded ? 'bg-indigo-100 text-indigo-700' : 'text-slate-400 hover:text-indigo-600 hover:bg-slate-100'}`}
                                   title={isExpanded ? "Collapse" : "View Details"}
-                                  aria-label={isExpanded ? "Collapse task details" : "Expand task details"}
+                                  aria-label={isExpanded ? "ย่อรายละเอียด" : "ดูรายละเอียด"}
                                   aria-expanded={isExpanded}
                                   aria-controls={expandedContentId}
                                 >
                                   {isExpanded ? <ChevronUp size={16} /> : <MoreHorizontal size={16} />}
                                 </button>
-                                <button 
-                                  onClick={() => handleEditClick(phase.id, task)}
-                                  className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                  title="Edit Task"
-                                  aria-label={`Edit task ${task.title}`}
-                                >
-                                  <Edit2 size={16} />
-                                </button>
-                                <button 
-                                  onClick={() => onDeleteTask(phase.id, task.id)}
-                                  className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-rose-500"
-                                  title="Delete Task"
-                                  aria-label={`Delete task ${task.title}`}
-                                >
-                                  <Trash2 size={16} />
-                                </button>
+                                {userRole === 'admin' && (
+                                  <>
+                                    <button 
+                                      onClick={() => handleEditClick(phase.id, task)}
+                                      className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                      title="แก้ไข"
+                                      aria-label={`Edit task ${task.title}`}
+                                    >
+                                      <Edit2 size={16} />
+                                    </button>
+                                    <button 
+                                      onClick={() => onDeleteTask(phase.id, task.id)}
+                                      className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-rose-500"
+                                      title="ลบ"
+                                      aria-label={`Delete task ${task.title}`}
+                                    >
+                                      <Trash2 size={16} />
+                                    </button>
+                                  </>
+                                )}
                               </div>
                             </td>
                           </tr>
@@ -489,23 +496,23 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                           {isExpanded && (
                             <tr>
                               <td colSpan={5} className="px-0 py-0 border-none animate-fade-in-down">
-                                <div id={expandedContentId} className="bg-slate-50/50 border-b border-slate-200 p-8 pl-20" role="region" aria-label={`Discussion for task ${task.id}`}>
-                                  <div className="max-w-4xl">
+                                <div id={expandedContentId} className="bg-slate-50 border-y border-slate-200 p-6 pl-20 shadow-inner" role="region" aria-label={`Discussion for task ${task.id}`}>
+                                  <div className="max-w-4xl border-l-4 border-indigo-500 pl-6">
                                     <div className="flex items-center justify-between mb-6">
-                                      <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest flex items-center">
-                                        <MessageSquare size={14} className="mr-2 text-indigo-500" aria-hidden="true" /> TASK DISCUSSION & ACTIVITY
+                                      <h4 className="text-xs font-bold text-slate-600 uppercase tracking-widest flex items-center">
+                                        <Clock size={16} className="mr-2 text-indigo-600" aria-hidden="true" /> ประวัติการติดตามงาน (History Log)
                                       </h4>
                                       <span className="text-[10px] font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
-                                        {task.logs?.length || 0} MESSAGES
+                                        {task.logs?.length || 0} รายการ
                                       </span>
                                     </div>
                                     
-                                    <div className="space-y-4 mb-8 max-h-[400px] overflow-y-auto pr-4 custom-scrollbar" tabIndex={0} role="log" aria-label="Activity Log">
+                                    <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar" tabIndex={0} role="log" aria-label="Activity Log">
                                       {(!task.logs || task.logs.length === 0) && (
-                                        <div className="text-center py-10 text-slate-400 italic text-sm bg-white rounded-2xl border border-slate-200 border-dashed">
-                                          <MessageSquare size={32} className="mx-auto mb-3 opacity-20" aria-hidden="true" />
-                                          <p className="font-bold">No discussion history yet.</p>
-                                          <p className="text-xs mt-1">Start by adding a comment below.</p>
+                                        <div className="text-center py-8 text-slate-400 italic text-sm bg-white rounded-xl border border-slate-200 border-dashed">
+                                          <MessageSquare size={24} className="mx-auto mb-2 opacity-30" aria-hidden="true" />
+                                          <p className="font-medium">ยังไม่มีบันทึกการติดตามงาน</p>
+                                          <p className="text-xs mt-1">เริ่มเขียนบันทึกรายการแรกด้านล่าง</p>
                                         </div>
                                       )}
                                       
@@ -514,8 +521,8 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                                           <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shadow-sm border-2 border-white ${getAvatarColor(log.author)}`} aria-hidden="true">
                                             {log.author.charAt(0)}
                                           </div>
-                                          <div className="flex-1 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm transition-shadow hover:shadow-md">
-                                            <div className="flex justify-between items-center mb-2">
+                                          <div className="flex-1 bg-white p-3.5 rounded-2xl rounded-tl-none border border-slate-200 shadow-sm transition-shadow hover:shadow-md">
+                                            <div className="flex justify-between items-center mb-1.5">
                                               <span className="font-bold text-slate-800 text-xs">{log.author}</span>
                                               <span className="text-[10px] text-slate-400 font-medium tabular-nums">
                                                 {formatThaiDateTime(log.date)}
@@ -527,9 +534,9 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                                       ))}
                                     </div>
 
-                                    <div className="bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all flex gap-3 items-center">
-                                      <div className="w-10 h-10 shrink-0 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center" aria-hidden="true">
-                                        <User size={18} />
+                                    <div className="bg-white p-1.5 rounded-xl border border-slate-300 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all flex gap-3 items-center">
+                                      <div className="w-8 h-8 shrink-0 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center" aria-hidden="true">
+                                        <User size={16} />
                                       </div>
                                       <label htmlFor={`comment-input-${task.id}`} className="sr-only">Add a comment</label>
                                       <input 
@@ -538,21 +545,21 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                                         autoFocus
                                         value={newComment}
                                         onChange={(e) => setNewComment(e.target.value)}
-                                        placeholder="Record status update, issues, or next steps..."
-                                        className="flex-1 text-sm bg-transparent border-none focus:ring-0 px-2 py-3 font-semibold text-slate-700 placeholder:text-slate-400"
+                                        placeholder="พิมพ์บันทึกผลการติดตาม ปัญหา หรืออัปเดตสถานะ..."
+                                        className="flex-1 text-sm bg-transparent border-none focus:ring-0 px-2 py-2 font-medium text-slate-700 placeholder:text-slate-400"
                                         onKeyDown={(e) => e.key === 'Enter' && handleAddLog(phase.id, task)}
                                       />
                                       <button 
                                         onClick={() => handleAddLog(phase.id, task)}
                                         disabled={!newComment.trim()}
-                                        className="bg-indigo-600 text-white p-3 rounded-xl hover:bg-indigo-700 transition-all disabled:opacity-30 disabled:grayscale flex items-center justify-center shadow-lg shadow-indigo-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
+                                        className="bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700 transition-all disabled:opacity-30 disabled:grayscale flex items-center justify-center shadow-md active:scale-95 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
                                         aria-label="Send comment"
                                       >
-                                        <Send size={18} aria-hidden="true" />
+                                        <Send size={16} aria-hidden="true" />
                                       </button>
                                     </div>
-                                    <p className="text-[10px] text-slate-400 font-bold mt-3 text-center uppercase tracking-widest">
-                                      Press <span className="text-slate-600">Enter</span> to send message
+                                    <p className="text-[10px] text-slate-400 font-medium mt-2 text-right">
+                                      กด <span className="font-bold text-slate-600">Enter</span> เพื่อส่งข้อความ
                                     </p>
                                   </div>
                                 </div>
@@ -597,7 +604,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
             
             <div className="p-8 space-y-6 overflow-y-auto max-h-[70vh]">
               <div>
-                <label htmlFor="task-title" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">หัวข้องาน (TASK TITLE)</label>
+                <label htmlFor="task-title" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">หัวข้องาน</label>
                 <input 
                   id="task-title"
                   type="text" 
@@ -609,7 +616,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
               </div>
 
               <div>
-                <label htmlFor="task-desc" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">รายละเอียด (DESCRIPTION)</label>
+                <label htmlFor="task-desc" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">รายละเอียด</label>
                 <textarea 
                   id="task-desc"
                   className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-semibold min-h-[100px]"
@@ -622,7 +629,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                   <label htmlFor="task-start" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">วันที่เริ่มต้น (START DATE)</label>
+                   <label htmlFor="task-start" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">วันที่เริ่มต้น</label>
                    <input 
                     id="task-start"
                     type="date" 
@@ -632,7 +639,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                   />
                 </div>
                 <div>
-                   <label htmlFor="task-end" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">วันที่สิ้นสุด (END DATE)</label>
+                   <label htmlFor="task-end" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">วันที่สิ้นสุด</label>
                    <input 
                     id="task-end"
                     type="date" 
@@ -645,7 +652,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="task-team" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">ฝ่ายที่รับผิดชอบ (RESPONSIBLE TEAM)</label>
+                  <label htmlFor="task-team" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">ฝ่ายที่รับผิดชอบ</label>
                   <select 
                     id="task-team"
                     className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold"
@@ -656,7 +663,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                   </select>
                 </div>
                 <div>
-                   <label htmlFor="task-owner" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">ผู้รับผิดชอบ (OWNER NAME)</label>
+                   <label htmlFor="task-owner" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">ผู้รับผิดชอบ</label>
                    <input 
                     id="task-owner"
                     type="text" 
@@ -670,12 +677,13 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
 
               <div className="grid grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="task-status" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">สถานะปัจจุบัน (CURRENT STATUS)</label>
+                  <label htmlFor="task-status" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">สถานะปัจจุบัน</label>
                   <select 
                       id="task-status"
-                      className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold"
+                      className={`w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold ${isAdding ? 'bg-slate-100 text-slate-500 cursor-not-allowed' : ''}`}
                       value={formData.status || 'Pending'}
                       onChange={(e) => setFormData({...formData, status: e.target.value as any})}
+                      disabled={isAdding}
                     >
                       <option value="Pending">รอดำเนินการ (Pending)</option>
                       <option value="In Progress">กำลังดำเนินการ (In Progress)</option>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, CalendarDays, ListChecks, Anchor, Menu, X, Settings } from 'lucide-react';
+import { LayoutDashboard, CalendarDays, ListChecks, Anchor, Menu, X, Settings, Shield, User } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import TimelineView from './components/TimelineView';
 import AgendaChecklist from './components/AgendaChecklist';
@@ -8,10 +8,13 @@ import { INITIAL_AGENDA_ITEMS, INITIAL_PROJECT_PHASES, INITIAL_TEAMS } from './c
 import { AgendaItem, Phase, Task, TeamDefinition } from './types';
 
 type Tab = 'dashboard' | 'timeline' | 'agenda' | 'settings';
+export type UserRole = 'admin' | 'staff';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userRole, setUserRole] = useState<UserRole>('admin');
+  
   const [agendaItems, setAgendaItems] = useState<AgendaItem[]>(INITIAL_AGENDA_ITEMS);
   const [phases, setPhases] = useState<Phase[]>(INITIAL_PROJECT_PHASES);
   const [teams, setTeams] = useState<TeamDefinition[]>(INITIAL_TEAMS);
@@ -93,6 +96,7 @@ const App: React.FC = () => {
             onUpdateTask={handleUpdateTask}
             onAddTask={handleAddTask}
             onDeleteTask={handleDeleteTask}
+            userRole={userRole}
           />
         );
       case 'agenda':
@@ -103,6 +107,7 @@ const App: React.FC = () => {
             onUpdateItem={handleUpdateAgendaItem}
             onDeleteItem={handleDeleteAgendaItem}
             onAddItem={handleAddAgendaItem}
+            userRole={userRole}
           />
         );
       case 'settings':
@@ -112,6 +117,7 @@ const App: React.FC = () => {
             onAddTeam={handleAddTeam}
             onUpdateTeam={handleUpdateTeam}
             onDeleteTeam={handleDeleteTeam}
+            userRole={userRole}
           />
         );
       default:
@@ -169,11 +175,35 @@ const App: React.FC = () => {
             <NavItem id="settings" label="การตั้งค่า (Settings)" icon={Settings} />
           </nav>
 
-          <div className="p-4 border-t border-slate-100">
+          <div className="p-4 border-t border-slate-100 space-y-4">
             <div className="bg-indigo-50 p-4 rounded-xl">
                <p className="text-xs font-semibold text-indigo-800 uppercase mb-2">Next Milestone</p>
                <p className="text-sm font-bold text-indigo-900">Final Assembly</p>
                <p className="text-xs text-indigo-600">Due: 6 Feb 2569</p>
+            </div>
+
+            {/* Simulated User Role Switcher */}
+            <div className="border border-slate-200 rounded-xl p-3 bg-slate-50">
+              <div className="flex items-center justify-between mb-2">
+                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Current User</span>
+                 <button 
+                    onClick={() => setUserRole(prev => prev === 'admin' ? 'staff' : 'admin')}
+                    className="text-[10px] text-indigo-600 font-bold hover:underline"
+                 >
+                    สลับบทบาท
+                 </button>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className={`p-2 rounded-full ${userRole === 'admin' ? 'bg-indigo-100 text-indigo-600' : 'bg-slate-200 text-slate-500'}`}>
+                  {userRole === 'admin' ? <Shield size={16} /> : <User size={16} />}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-slate-800 capitalize">{userRole}</p>
+                  <p className="text-[10px] text-slate-500">
+                    {userRole === 'admin' ? 'Full Access' : 'Read Only'}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

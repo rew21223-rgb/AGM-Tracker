@@ -9,6 +9,7 @@ interface AgendaChecklistProps {
   onUpdateItem: (item: AgendaItem) => void;
   onDeleteItem: (id: string) => void;
   onAddItem: (item: AgendaItem) => void;
+  userRole: 'admin' | 'staff';
 }
 
 const getThaiStatusLabel = (status: string) => {
@@ -20,7 +21,7 @@ const getThaiStatusLabel = (status: string) => {
   }
 };
 
-const AgendaChecklist: React.FC<AgendaChecklistProps> = ({ items, teams, onUpdateItem, onDeleteItem, onAddItem }) => {
+const AgendaChecklist: React.FC<AgendaChecklistProps> = ({ items, teams, onUpdateItem, onDeleteItem, onAddItem, userRole }) => {
   const [editingItem, setEditingItem] = useState<AgendaItem | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
@@ -79,7 +80,7 @@ const AgendaChecklist: React.FC<AgendaChecklistProps> = ({ items, teams, onUpdat
         id: Date.now().toString(),
         date: new Date().toISOString(),
         message: newLogMessage,
-        author: 'Current User' // Mock user
+        author: userRole === 'admin' ? 'Admin' : 'Staff'
       };
       onUpdateItem({
         ...item,
@@ -100,13 +101,15 @@ const AgendaChecklist: React.FC<AgendaChecklistProps> = ({ items, teams, onUpdat
           <h2 className="text-2xl font-bold text-slate-800">จัดการระเบียบวาระและติดตามงาน</h2>
           <p className="text-slate-500 text-sm mt-1">บริหารจัดการเนื้อหาหนังสือรายงานประจำปี มอบหมายผู้รับผิดชอบ และติดตามความคืบหน้า</p>
         </div>
-        <button 
-          onClick={handleAddClick}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors flex items-center shadow-sm"
-        >
-          <Plus size={16} className="mr-2" />
-          เพิ่มวาระใหม่
-        </button>
+        {userRole === 'admin' && (
+          <button 
+            onClick={handleAddClick}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors flex items-center shadow-sm"
+          >
+            <Plus size={16} className="mr-2" />
+            เพิ่มวาระใหม่
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -161,20 +164,24 @@ const AgendaChecklist: React.FC<AgendaChecklistProps> = ({ items, teams, onUpdat
                 </div>
 
                 <div className="col-span-1 lg:col-span-3 flex justify-end items-center gap-2">
-                   <button 
-                     onClick={(e) => { e.stopPropagation(); handleEditClick(item); }}
-                     className="p-1.5 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded transition-colors"
-                     title="แก้ไข"
-                   >
-                     <Edit2 size={16} />
-                   </button>
-                   <button 
-                     onClick={(e) => { e.stopPropagation(); onDeleteItem(item.id); }}
-                     className="p-1.5 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded transition-colors"
-                     title="ลบ"
-                   >
-                     <Trash2 size={16} />
-                   </button>
+                   {userRole === 'admin' && (
+                     <>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); handleEditClick(item); }}
+                          className="p-1.5 hover:bg-indigo-50 text-slate-400 hover:text-indigo-600 rounded transition-colors"
+                          title="แก้ไข"
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); onDeleteItem(item.id); }}
+                          className="p-1.5 hover:bg-red-50 text-slate-400 hover:text-red-600 rounded transition-colors"
+                          title="ลบ"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                     </>
+                   )}
                 </div>
               </div>
 
