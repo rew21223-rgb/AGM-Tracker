@@ -113,11 +113,11 @@ const AgendaChecklist: React.FC<AgendaChecklistProps> = ({ items, teams, onUpdat
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 grid grid-cols-12 gap-4 text-xs font-bold text-slate-500 uppercase tracking-wider">
-          <div className="col-span-6 lg:col-span-5">หัวข้อ / ระเบียบวาระ</div>
-          <div className="col-span-3 lg:col-span-2">ผู้รับผิดชอบ</div>
+        <div className="bg-slate-50 px-6 py-4 border-b border-slate-200 grid grid-cols-12 gap-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">
+          <div className="col-span-6 lg:col-span-5 text-center">หัวข้อ / ระเบียบวาระ</div>
+          <div className="col-span-3 lg:col-span-2 text-center">ผู้รับผิดชอบ</div>
           <div className="col-span-2 lg:col-span-2 text-center">สถานะ</div>
-          <div className="col-span-1 lg:col-span-3 text-right">จัดการ</div>
+          <div className="col-span-1 lg:col-span-3 text-center">จัดการ</div>
         </div>
 
         <div className="divide-y divide-slate-100">
@@ -163,7 +163,7 @@ const AgendaChecklist: React.FC<AgendaChecklistProps> = ({ items, teams, onUpdat
                    </span>
                 </div>
 
-                <div className="col-span-1 lg:col-span-3 flex justify-end items-center gap-2">
+                <div className="col-span-1 lg:col-span-3 flex justify-center items-center gap-2">
                    {userRole === 'admin' && (
                      <>
                         <button 

@@ -69,13 +69,13 @@ const Dashboard: React.FC<DashboardProps> = ({ agendaItems, phases }) => {
         </div>
       </div>
 
-      {/* Primary Metrics Grid */}
+      {/* Primary Metrics Grid - Colors updated for vibrancy */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <SummaryCard 
           title="ระยะเวลาคงเหลือ" 
           value={daysLeftDisplay}
           icon={Clock} 
-          color="sky" 
+          color="blue" 
           subtext={`เป้าหมายวันประชุมใหญ่: ${formatThaiDate(agmDate)}`}
           accessibilityLabel={`ระยะเวลาคงเหลือ: ${daysLeftLabel}. เป้าหมายวันประชุมใหญ่คือ ${formatThaiDate(agmDate)}. สถานะปัจจุบัน ${daysLeft < 14 && daysLeft >= 0 ? 'วิกฤต' : 'ปกติ'}.`}
           trend={{ 
@@ -88,7 +88,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agendaItems, phases }) => {
           title="ความคืบหน้าสะสม" 
           value={`${progressPercentage}%`} 
           icon={Activity} 
-          color="emerald" 
+          color="teal" 
           subtext={`ทำเสร็จแล้ว ${completedTasks} งาน จาก ${totalTasks} งานย่อย`}
           accessibilityLabel={`ความคืบหน้าโครงการรวม: ${progressPercentage}%. สถานะกำลังดำเนินการ. ดำเนินการเสร็จสิ้นแล้ว ${completedTasks} งาน จากทั้งหมด ${totalTasks} งานย่อย.`}
           trend={{ value: 'กำลังดำเนินการ', positive: true }}
@@ -97,7 +97,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agendaItems, phases }) => {
           title="ความพร้อมเนื้อหา" 
           value={`${finalizedAgenda}/${totalAgenda}`}
           icon={BookOpen} 
-          color="fuchsia" 
+          color="violet" 
           subtext="วาระที่ตรวจสอบความถูกต้องแล้ว"
           accessibilityLabel={`ความพร้อมเนื้อหาวาระการประชุม: ${readinessPercent}%. ตรวจสอบความถูกต้องแล้ว ${finalizedAgenda} วาระ จากทั้งหมด ${totalAgenda} วาระ.`}
           trend={{ 
@@ -110,7 +110,7 @@ const Dashboard: React.FC<DashboardProps> = ({ agendaItems, phases }) => {
           title="จุดที่ต้องเร่งแก้ไข" 
           value={overdueCount} 
           icon={AlertTriangle} 
-          color="amber" 
+          color="rose" 
           subtext="งานที่เกินกำหนดหรือพบปัญหาล่าช้า"
           accessibilityLabel={`จุดที่ต้องเร่งแก้ไข: พบ ${overdueCount} รายการ. ${overdueCount > 0 ? 'สถานะต้องแก้ไข' : 'สถานะเรียบร้อย'}. ซึ่งเป็นงานที่เกินกำหนดหรือพบปัญหาล่าช้า.`}
           trend={overdueCount > 0 ? { value: 'ต้องแก้ไข', positive: false } : { value: 'เรียบร้อย', positive: true }}
