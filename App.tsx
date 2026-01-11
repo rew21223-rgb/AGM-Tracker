@@ -200,7 +200,7 @@ const App: React.FC = () => {
                 <div>
                   <p className="text-sm font-bold text-slate-800 capitalize">{userRole}</p>
                   <p className="text-[10px] text-slate-500">
-                    {userRole === 'admin' ? 'Full Access' : 'Read Only'}
+                    {userRole === 'admin' ? 'Full Access' : 'Update Progress'}
                   </p>
                 </div>
               </div>

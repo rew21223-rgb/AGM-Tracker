@@ -468,7 +468,7 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                                         เริ่ม {formatThaiDate(task.startDate)}
                                      </span>
                                   </div>
-                               </div>
+                                </div>
                             </td>
 
                             {/* STATUS COLUMN */}
@@ -489,25 +489,27 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                                 >
                                   {isExpanded ? <ChevronUp size={16} /> : <MoreHorizontal size={16} />}
                                 </button>
+                                
+                                {/* Edit Button - Available for Admin and Staff */}
+                                <button 
+                                  onClick={() => handleEditClick(phase.id, task)}
+                                  className="p-2 text-slate-400 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                  title={userRole === 'admin' ? "แก้ไข" : "อัปเดตความคืบหน้า"}
+                                  aria-label={`แก้ไขงาน ${task.title}`}
+                                >
+                                  <Edit2 size={16} />
+                                </button>
+                                
+                                {/* Delete Button - Admin Only */}
                                 {userRole === 'admin' && (
-                                  <>
-                                    <button 
-                                      onClick={() => handleEditClick(phase.id, task)}
-                                      className="p-2 text-slate-400 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                      title="แก้ไข"
-                                      aria-label={`แก้ไขงาน ${task.title}`}
-                                    >
-                                      <Edit2 size={16} />
-                                    </button>
-                                    <button 
-                                      onClick={() => onDeleteTask(phase.id, task.id)}
-                                      className="p-2 text-slate-400 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-rose-500"
-                                      title="ลบ"
-                                      aria-label={`ลบงาน ${task.title}`}
-                                    >
-                                      <Trash2 size={16} />
-                                    </button>
-                                  </>
+                                  <button 
+                                    onClick={() => onDeleteTask(phase.id, task.id)}
+                                    className="p-2 text-slate-400 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-rose-500"
+                                    title="ลบ"
+                                    aria-label={`ลบงาน ${task.title}`}
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
                                 )}
                               </div>
                             </td>
@@ -628,7 +630,8 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                 <input 
                   id="task-title"
                   type="text" 
-                  className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold text-slate-700"
+                  disabled={userRole !== 'admin'}
+                  className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold text-slate-700 disabled:bg-slate-100 disabled:text-slate-500"
                   value={formData.title}
                   onChange={(e) => setFormData({...formData, title: e.target.value})}
                   placeholder="เช่น 1.1 สรุปรายงานการตรวจสอบ"
@@ -639,7 +642,8 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                 <label htmlFor="task-desc" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">รายละเอียด</label>
                 <textarea 
                   id="task-desc"
-                  className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-semibold min-h-[100px] text-slate-700"
+                  disabled={userRole !== 'admin'}
+                  className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-semibold min-h-[100px] text-slate-700 disabled:bg-slate-100 disabled:text-slate-500"
                   rows={3}
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
@@ -653,20 +657,34 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                    <input 
                     id="task-start"
                     type="date" 
-                    className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold text-slate-700"
+                    disabled={userRole !== 'admin'}
+                    className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold text-slate-700 disabled:bg-slate-100 disabled:text-slate-500"
                     value={formData.startDate}
                     onChange={(e) => setFormData({...formData, startDate: e.target.value})}
                   />
+                  <div className="mt-1.5 flex justify-end">
+                    <span className="text-[11px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 flex items-center shadow-sm">
+                      <Calendar size={10} className="mr-1.5" />
+                      {formData.startDate ? formatThaiDate(formData.startDate) : '-'}
+                    </span>
+                  </div>
                 </div>
                 <div>
                    <label htmlFor="task-end" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">วันที่สิ้นสุด</label>
                    <input 
                     id="task-end"
                     type="date" 
-                    className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold text-slate-700"
+                    disabled={userRole !== 'admin'}
+                    className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold text-slate-700 disabled:bg-slate-100 disabled:text-slate-500"
                     value={formData.endDate}
                     onChange={(e) => setFormData({...formData, endDate: e.target.value})}
                   />
+                  <div className="mt-1.5 flex justify-end">
+                    <span className="text-[11px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100 flex items-center shadow-sm">
+                      <Calendar size={10} className="mr-1.5" />
+                      {formData.endDate ? formatThaiDate(formData.endDate) : '-'}
+                    </span>
+                  </div>
                 </div>
               </div>
 
@@ -675,7 +693,8 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                   <label htmlFor="task-team" className="block text-[10px] font-black text-slate-500 uppercase tracking-widest mb-2">ฝ่ายที่รับผิดชอบ</label>
                   <select 
                     id="task-team"
-                    className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold text-slate-700"
+                    disabled={userRole !== 'admin'}
+                    className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold text-slate-700 disabled:bg-slate-100 disabled:text-slate-500"
                     value={formData.team}
                     onChange={(e) => setFormData({...formData, team: e.target.value})}
                   >
@@ -687,7 +706,8 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                    <input 
                     id="task-owner"
                     type="text" 
-                    className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold text-slate-700"
+                    disabled={userRole !== 'admin'}
+                    className="w-full text-sm border-slate-200 rounded-xl shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-4 py-3 border font-bold text-slate-700 disabled:bg-slate-100 disabled:text-slate-500"
                     value={formData.responsiblePerson}
                     onChange={(e) => setFormData({...formData, responsiblePerson: e.target.value})}
                     placeholder="ระบุชื่อผู้รับผิดชอบ"
@@ -730,7 +750,8 @@ const TimelineView: React.FC<TimelineViewProps> = ({ phases, teams, onUpdateTask
                 <input
                   id="isMilestone"
                   type="checkbox"
-                  className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-slate-300 rounded-lg cursor-pointer"
+                  disabled={userRole !== 'admin'}
+                  className="h-5 w-5 text-indigo-600 focus:ring-indigo-500 border-slate-300 rounded-lg cursor-pointer disabled:opacity-50"
                   checked={formData.isMilestone}
                   onChange={(e) => setFormData({...formData, isMilestone: e.target.checked})}
                 />
